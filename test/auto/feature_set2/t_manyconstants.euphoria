@@ -1,0 +1,8 @@
+include std/unittest.e
+global constant WINVER = #600
+without c_errors
+include mmsystem.h
+test_equal( "Can view results of macros that were defined with a literal number", MCI_OPEN, MCI_OPEN )
+test_equal( "Can view results of macros that were defined with another macro (which was defined as a literal)", MCI_FIRST, MCI_FIRST )
+test_report() 
+

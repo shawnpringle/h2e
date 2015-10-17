@@ -1,0 +1,8 @@
+include std/unittest.e
+include nt/ntdef.h
+include nt/mmsystem.h
+atom x = c_func(midiOutGetNumDevs, {})
+test_pass("Functions get exported from header files")
+test_report() 
+
+

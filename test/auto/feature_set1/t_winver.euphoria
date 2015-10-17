@@ -1,0 +1,4 @@
+include std/unittest.e
+-- should substitute / for SLASH here.
+include nt/windef.h
+test_equal("Default WINVER is set", #0400, WINVER )

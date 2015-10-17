@@ -1,0 +1,10 @@
+include std/unittest.e
+global constant WINVER = #600
+without c_errors
+include nt/ntdef.h
+include mmsystem.h
+test_equal( "Can view results of macros that were defined with a literal number", MCI_OPEN, MCI_OPEN )
+test_equal( "Can view results of macros that were defined with another macro (which was defined as a literal)", MCI_FIRST, MCI_FIRST )
+test_equal( "Can view results of macro expressions that have EUPHORIA like syntax.", MCI_VD_MODE_PARK , MCI_VD_MODE_PARK )
+test_report() 
+

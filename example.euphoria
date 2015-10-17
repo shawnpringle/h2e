@@ -1,0 +1,16 @@
+-- example
+global constant WINVER = #600
+with define UNICODE
+include nt/ddk/ntdef.h
+include stdio.h
+include nt/windef.h
+-- include nt/winnt.h
+-- include nt/windef.h
+-- include nt/ddk/ntdef.h
+include nt/mmsystem.h
+-- include nt/ddraw.h
+
+printf( 1, "%s = 0x%x\n", {"MCI_SEQ_SMPTE",MCI_SEQ_SMPTE} )
+
+
+

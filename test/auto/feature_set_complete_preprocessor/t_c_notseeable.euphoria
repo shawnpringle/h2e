@@ -1,0 +1,7 @@
+include std/unittest.e
+include hide.h
+-- hidden value shouldn't be seen here!
+integer x = hidden_value
+test_fail("Shouldn't be able to see hidden_value here")
+test_report()
+

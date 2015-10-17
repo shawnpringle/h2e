@@ -1,0 +1,58 @@
+<HTML>
+<BODY>
+<STYLE>
+span.code { font-family: system; }
+span.keyword { font-family: system; color: blue; }
+span.id { font-family: system; font-style: italic; }
+</STYLE>
+
+<H1>HEADER USING PREPROCESSOR</H1>
+
+<P>This module allows for EUPHORIA code to include C headers right at the top of a
+EUPHORIA program.  Translation is done on the fly.  Once translated the resulting dot-e files
+can be copied to another location.
+</P>
+
+<H2>Supported Commands in the EUPHORIA files</H2>
+<hr>
+<P>
+<span class="code">
+<span class="keyword">include</span> <span class="id">headerfile.h</span></span>
+</P>
+
+<P>This includes most of a header's constants and routines for use with EUPHORIA.
+Until we can parse arbitrary C expressions macro constants will never be 100% converted
+but most are.
+</P>
+
+<hr>
+<P>
+<span class="code">
+<span class="keyword">with c_errors</span></span>
+</P>
+
+<P>This makes the preprocessor enable or disable errors.  When enabled it will die when it encouters something it cannot handle.
+
+<hr>
+<P>
+<span class="code">
+<span class="keyword">global constant</span>  <span class="id">constant_name</span> = <span class="id">constant_value</span>
+</span>
+</P>
+<P>This creates a global symbol and this global symbol will also be visible to header files you include after this declaration.</P>
+
+<H2>Supported C commands are macro constants.</H2>
+<P>
+<span class="code">
+<span class="keyword">#define</span> <span class="id">new_symbol</span> <span class="id">definition</span></span>
+</P>
+<P>
+<span class="code">
+<span class="keyword">static const</span> <span class="id">new_symbol</span> = <span class="id">definition</span></span>
+</P>
+<P>
+Currently single token literals (#defined values or numeric literals) are supported.
+
+</BODY>
+
+</HTML>

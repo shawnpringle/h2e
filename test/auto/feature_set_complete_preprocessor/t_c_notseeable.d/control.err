@@ -1,0 +1,17 @@
+e:\h2e\test\auto\feature_set_complete_preprocessor\t_c_notseeable.e:5
+<0074>:: Errors resolving the following references:
+	t_c_notseeable.e (5): hidden_value
+
+test_fail ( "Shouldn't be able to see hidden_value here") 
+          ^
+
+
+--- Defined Words ---
+EU4
+EU4_0
+EU4_0_1
+WINDOWS
+WIN32
+CONSOLE
+EUI
+-------------------

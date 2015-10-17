@@ -1,0 +1,3 @@
+include std/unittest.e
+-- empty test
+test_report()
