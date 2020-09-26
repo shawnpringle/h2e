@@ -6,7 +6,7 @@ include std/search.e  as search -- match_replace()
 include std/error.e
 include preprocessor.e
 include c.e
-include std/filesys.e
+include std/filesys.e as fs
 include euphoria.e
 include std/get.e
 include std/text.e
@@ -53,15 +53,15 @@ public function convert_header(sequence pre_include_file, sequence header_file_n
 	integer regenerate = 0
 	if begins(shortest_include_dir_list,upper(header_file_name)) then
 		prepared_name = pathname( product_dir & SLASH & header_file_name[length(shortest_include_dir_list)+1..$] ) & SLASH & filebase(header_file_name) & ".h1"
-		object header_data = dir(header_file_name)
-		object prepared_header_data = dir(prepared_name)
+		object header_data = fs:dir(header_file_name)
+		object prepared_header_data = fs:dir(prepared_name)
 		-- header_data must be a sequence
 		if sequence(prepared_header_data) then
 			-- create if the C header is newer than the prepared header.
 			if length(prepared_header_data) != 1 then
 				crash("Internal Error: prepared_header %s returns more than one file in dir().", {prepared_name})
 			end if
-			regenerate = compare(header_data[1][D_YEAR..D_SECOND],prepared_header_data[1][D_YEAR..D_SECOND]) > 0
+			regenerate = eu:compare(header_data[1][fs:D_YEAR..fs:D_SECOND],prepared_header_data[1][fs:D_YEAR..fs:D_SECOND]) > 0
 		else
 			-- prepared name doesn't exist
 			-- create directory and create.

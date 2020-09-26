@@ -3,6 +3,7 @@ include more_tokens.e
 include error.e
 constant define_len = length("#define ")
 sequence immediate_defines = { {"__cplusplus", 0} } -- list of preprocessor ids and whether they are defined or not used by this translator
+include ../joy.e
 
 type command_string(sequence s)
 	if s[1]='#' and id_string(s[2..$]) then

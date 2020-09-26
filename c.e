@@ -104,7 +104,7 @@ function parse_a_type_descriptor(sequence statement_location, sequence tokens)
 			elsif j = is_signed then	
 			elsif j = is_unsigned then
 			elsif equal(tokens[j][TDATA],"const") then
-			elsif looking_for or compare(kind,C_POINTER) = 0 then
+			elsif looking_for or eu:compare(kind,C_POINTER) = 0 then
 				-- here, the unknown symbol is a newly declared variable, function or type definition
 
 				-- special case: signed or unsigned alone.
@@ -177,7 +177,7 @@ function parse_function_declaration(sequence statement_location, sequence tokens
 	end for	
 	integer r = key:find("WINAPI",TDATA,1,length(tokens),tokens)
 	if r != 0 then
-		tokens = remove(tokens,r)
+		tokens = eu:remove(tokens,r)
 	end if
 	s = s & "*/\n"
 	
@@ -351,7 +351,7 @@ public function process_header(sequence file_name, sequence processed_name, map 
 					end if					
 			end switch			
 		end for
-		if compare(goal_stack,"") then
+		if eu:compare(goal_stack,"") then
 			this_statement = this_statement & line
 		end if
 	end for
@@ -366,7 +366,7 @@ public function process_header(sequence file_name, sequence processed_name, map 
 			continue
 		end if
 		if length(tokens) > 1 and tokens[$][TTYPE] = T_NEWLINE then
-			tokens = remove(tokens,length(tokens))
+			tokens = eu:remove(tokens,length(tokens))
 		end if
 		if length(tokens) < 2 then	
 		elsif tokens[1][TTYPE] = T_IDENTIFIER and equal(tokens[1][TDATA],"typedef") then
@@ -408,7 +408,7 @@ public function process_header(sequence file_name, sequence processed_name, map 
 					if TOK[ET_ERROR] then
 						continue "statement_loop"
 					end if
-					tokens = {tokens[1],tokens[3]} & remove(TOK[ET_TOKENS],length(TOK[ET_TOKENS]))
+					tokens = {tokens[1],tokens[3]} & eu:remove(TOK[ET_TOKENS],length(TOK[ET_TOKENS]))
 				else
 					if verbose then
 						printf(2,"Ignorning structure declartion on %s:%d\n",statements[i][1..2])
@@ -521,8 +521,8 @@ public function process_header(sequence file_name, sequence processed_name, map 
 						continue
 					elsif t != dllimport and t != 0 then
 						cct = t
-					elsif find(jdat,{"extern","const"}) then							
-					elsif map:get(c_types,jdat,-1)!=-1 or find(jdat,{"unsigned","signed"}) or tokens[j][TTYPE] = T_MULTIPLY then
+					elsif eu:find(jdat,{"extern","const"}) then							
+					elsif map:get(c_types,jdat,-1)!=-1 or eu:find(jdat,{"unsigned","signed"}) or tokens[j][TTYPE] = T_MULTIPLY then
 						return_type = append(return_type,tokens[j])
 					elsif length(return_type) then
 						return_type = parse_a_type_descriptor(statements[i][1..2], 

@@ -23,6 +23,7 @@ include more_tokens.e
 include std/cmdline.e
 include set.e as set
 include error.e
+include joy.e
 
 object shortest_include_dir = 0
 set:set opened_files = set:new()
@@ -82,7 +83,7 @@ public function preprocess_header(sequence pre_included_files, sequence prepared
 	list &= {prepared_file_name,"-o", out_file}
 	if verbose then
 		puts(2,"Executing:\n")
-		puts(2,join(list," "))
+		puts(2,seq:join(list," "))
 	end if
 	integer pps = system_exec(build_commandline(list) & "",0)
 	if pps then
