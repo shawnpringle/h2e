@@ -62,7 +62,6 @@ public function preprocessor_new_token(sequence s, integer line_number, integer 
 	end if
 	return t
 end function
-with trace
 
 -- always should have white space on the end...
 public function preprocessor_tokenize_string(sequence string_data, integer line_number)

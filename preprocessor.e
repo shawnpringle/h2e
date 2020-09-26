@@ -27,9 +27,32 @@ include joy.e
 
 object shortest_include_dir = 0
 set:set opened_files = set:new()
-
-with trace
 with define ALLOW_MISSING_FILES
+
+include preprocessor/sio.e
+
+
+export type enum PPID PP_ID_WATCOM, PP_ID_GCC end type
+
+export type enum PPStructIndex
+	PP_EXE_NAME,
+	PP_ARGUMENT,
+	PP_ID
+end type
+export constant WatcomPP = { "owcc.exe", "-E", PP_ID_WATCOM}
+export constant GCCPP       = { "gcc.exe", "-E", PP_ID_GCC}
+public constant pp_candidates = {WatcomPP, GCCPP}
+-- preprocessor type
+public type pp_t(object s)
+	if length(s) = 3 then
+		return stringASCII(s[1]) and stringASCII(s[2]) and PPID(s[3])
+	end if
+	return 0
+end type
+-- preprocessor dummy data is 0.
+public object pp = 0
+public string_of_integers header_path, pp_path 
+
 
 -- retrieve a line joining lines that end in backslash
 -- and also returning the number of new lines encountered
@@ -60,32 +83,32 @@ function getcs(integer in)
 	return {ret, line_number}
 end function
 
+--constant WatcomPP = { "owcc.exe", "-E" }
+--constant GCCPP       = { "gcc.exe", "-E"}
+
 /*
  calls a preprocessor in such a way that it includes the pre-included-files in <i>pre_included_files</i>,
  a sequence of strings, each string is a file name; processes <i>prepared_file_name</i>, and the
  preprocessed output it written to a new file named by <i>out_file</i> 
  */
+ with trace
 public function preprocess_header(sequence pre_included_files, sequence prepared_file_name, sequence out_file, integer verbose = 0 )
 	if string_of_atoms(pre_included_files) then
 		pre_included_files = {pre_included_files}
 	end if
 	object PATH = getenv("PATH")
-	sequence list = {"owcc.exe","-E"}
-	if atom(PATH) or compare(locate_file("owcc.exe",PATH),"owcc.exe")=0 then
-		-- couldn't find it...
-		puts(2,"Error no C preprocessor found.")
-		maybe_any_key("Press any key to Close.")
-		abort(1)
-	end if
+	-- We should probably let the user decide which to use somehow...
+	string_of_strings cmd = pp[PP_EXE_NAME..PP_ARGUMENT]
 	for i = 1 to length(pre_included_files) do
-		list = list & {"-include-file",pre_included_files[i]}
+		pp = pp & {"-include-file",pre_included_files[i]}
 	end for
-	list &= {prepared_file_name,"-o", out_file}
+	pp &= {prepared_file_name,"-o", out_file}
+	trace(1)
 	if verbose then
-		puts(2,"Executing:\n")
-		puts(2,seq:join(list," "))
+		eputsln("Executing:")
+		puts(2,seq:join(pp," "))
 	end if
-	integer pps = system_exec(build_commandline(list) & "",0)
+	integer pps = system_exec(build_commandline(pp) & "",0)
 	if pps then
 		abort(pps)
 	end if
@@ -105,7 +128,7 @@ public function prepare_header(sequence header_file_name, sequence prepared_file
 	integer hfd = -1
 	
 	trace(1)
-	long_name = locate_file(header_file_name,getenv("INCLUDE"))
+	long_name = locate_file(header_file_name,header_path)
 	if not set:has(opened_files,long_name) then
 		hfd = open(long_name,"r")
 		
@@ -188,7 +211,7 @@ public function prepare_header(sequence header_file_name, sequence prepared_file
 					if atom(included_file) or length(included_file)<4 then
 						die(header_file_name, line, line_number, "Cannot see an include line here.",{})						
 					end if
-					object include_dir = getenv("INCLUDE")
+					object include_dir = header_path
 					sequence full_path = locate_file(included_file[4],include_dir)
 					ifdef not ALLOW_MISSING_FILES then
 						if not file_exists(full_path) then

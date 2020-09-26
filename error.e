@@ -3,7 +3,6 @@ include std/cmdline.e
 include std/console.e
 include std/filesys.e
 
-with trace
 public procedure maybe_edit(sequence file_name, integer line_number)
 	if equal(locate_file("jedit.bat",PATH),"jedit.bat") then
 		printf(2,"We suggest you download jEdit for easier development.",{})

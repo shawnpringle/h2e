@@ -5,13 +5,18 @@ include std/io.e       -- read_file() and write_file()
 include std/search.e  as search -- match_replace()
 include std/error.e
 include preprocessor.e
+include preprocessor/sio.e
 include c.e
 include std/filesys.e as fs
 include euphoria.e
 include std/get.e
 include std/text.e
+include joy.e as joy
 
 with define DEBUG
+
+
+
 
 sequence cmds = command_line()
 sequence inFileName, outFileName
@@ -40,14 +45,32 @@ constant product_dir = canonical_path(`C:\Users\Public\Documents\dev\h1`)
 function escape_string(sequence s)
 	return s
 end function
-with trace
+
 public function convert_header(sequence pre_include_file, sequence header_file_name, sequence temp_directory, object syms)
-	sequence shortest_include_dir_list = upper(getenv("WATCOM") & `\h\`)
+	object Watcom = getenv("WATCOM")
+	object Include   = getenv("INCLUDE")
+	sequence shortest_include_dir_list
+	if pp[PP_ID] = PP_ID_WATCOM then
+		header_path = Include
+		shortest_include_dir_list = upper(Watcom & `\h\`)
+	elsif pp[PP_ID] = PP_ID_GCC then
+		sequence where_is_gcc = pathname(pp_path)
+		integer sl = joy:rfind(SLASH, where_is_gcc)
+		if not sl then
+			crash("Cannot locate include directories for GCC (mingw)")
+		end if
+		sequence gcc_root =where_is_gcc[1..sl]
+		header_path = gcc_root & "include"
+		shortest_include_dir_list = header_path
+		--crash("not yet ready for GCC")
+	else
+		crash("Have not converted this yet to your preprocessor ")
+	end if
 	sequence can_header_file_name
 	sequence prepared_name
 
 	if not file_exists(header_file_name) then
-		header_file_name = locate_file(header_file_name,getenv("INCLUDE"))
+		header_file_name = locate_file(header_file_name,header_path)
 	end if
 	
 	integer regenerate = 0
@@ -92,12 +115,34 @@ public function convert_header(sequence pre_include_file, sequence header_file_n
 	return process_header(preprocessed_name, processed_name,syms,with_flags)
 end function
 
-global object PATH = getenv("PATH")
-if atom(PATH) or equal(locate_file("owcc.exe",PATH),"owcc.exe") then
-	-- couldn't find Preprocessor for C
-	crash("This version of EUPHORIA requires a C Preprocessor but none was found.")
-end if
+procedure die(sequence s)
+	oputsln(s)
+	--maybe_any_key("Press any key to Close.")
+	abort(1)
+end procedure	
 
+global object PATH = getenv("PATH")
+
+
+-- We should probably let the user decide which to use somehow...
+if atom(PATH) then
+	die("PATH variable not set.  That is why no preprocessor could be found.")
+end if
+for i = 1 to length(pp_candidates) do
+	pp_t pp_candidate = pp_candidates[i]
+	string_of_integers ppname = pp_candidate[PP_EXE_NAME]
+	string_of_integers located = locate_file(ppname,PATH) 
+	if compare(located,ppname) then
+		pp = pp_candidate
+		pp_path = located
+		exit
+	end if
+end for
+if atom(pp) then
+	-- couldn't find it...
+	die("Error no C preprocessor found.")
+	-- crash("This version of EUPHORIA requires a C Preprocessor but none was found.")
+end if
 
 -- parse a .euphoria file.
 with_flags = map:new()

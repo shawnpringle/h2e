@@ -58,7 +58,6 @@ object c_structs = 0, c_unions = 0
 --------------------
 --- WITH FLAGS  ----
 --------------------
-with trace
 without define VALIDATE_TYPEDEF
 with define PARSE_C_FUNCTIONS
 
